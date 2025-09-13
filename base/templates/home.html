@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="welcome-section">
+  <h1>Welcome to <span>Lumière</span> Cafeteria</h1>
+  <p>Your cozy online spot for coffee, snacks, and fresh vibes — any time of the day!</p>
+</div>
+
+<h1>Products</h1>
+
+<div class="products-container">
+  {% for product in products %}
+    <div class="product-card">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+      {% else %}
+        <img src="" alt="No Image">
+      {% endif %}
+      
+      <h2>{{ product.title }}</h2>
+      <p>${{ product.price }}</p>
+      <p>Stock: {{ product.stock }}</p>
+      <p>⭐ {{ product.rating }}</p>
+      <a href="{% url 'base:add_to_cart' product.id %}" class="add-to-cart">Add to Cart</a>
+    </div>
+  {% endfor %}
+</div>
+
+<a href="{% url 'base:cart_view' %}" class="cart-link">Go to Cart</a>
+<section class="about-section">
+  <div class="about-container">
+    <div class="about-image">
+      <img src="{% static 'source/23.jpg' %}" alt="Lumière Cafeteria">
+    </div>
+    <div class="about-text">
+      <h2>About Us</h2>
+      <p>
+        Welcome to <strong>Lumière Cafeteria</strong>, your cozy online spot for coffee,
+        snacks, and fresh vibes — any time of the day!  
+      </p>
+      <p>
+        We believe in the magic of a good cup of coffee shared with friends. 
+        Our team is passionate about serving freshly brewed coffee, 
+        delicious snacks, and creating a warm, inviting atmosphere for everyone.  
+      </p>
+      <p>
+        Whether you're here for a morning boost, a study break, or an evening snack,
+        <em>Lumière Cafeteria</em> is here to brighten your day 
+      </p>
+    </div>
+  </div>
+
+  <!-- Social Media -->
+  <div class="social-section">
+    <h3>Follow Us</h3>
+    <div class="social-links">
+      <a href="https://facebook.com" target="_blank" class="facebook">
+        <i class="fa-brands fa-facebook-f"></i>
+
+      <a href="https://instagram.com" target="_blank" class="instagram">
+        <i class="fa-brands fa-instagram"></i>
+      </a>
+      <a href="https://youtube.com" target="_blank" class="youtube">
+        <i class="fa-brands fa-youtube"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const csrfToken = "{{ csrf_token }}";
+
+  function updateCartCount() {
+    fetch("{% url 'base:cart_api' %}")
+      .then(res => res.json())
+      .then(cart => {
+        document.getElementById("cart-count").textContent = cart.count;
+      });
+  }
+
+  document.querySelectorAll(".add-to-cart").forEach(button => {
+    button.addEventListener("click", () => {
+      const url = button.dataset.url;  
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "Accept": "application/json",
+        },
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          updateCartCount();
+          alert(`${data.item.product_name} added to cart!`);
+        } else {
+          alert("Failed: " + (data.error || "Unknown error"));
+        }
+      })
+      .catch(err => console.error("Add to cart failed:", err));
+    });
+  });
+
+  updateCartCount();
+});
+</script>
+
+{% endblock %}

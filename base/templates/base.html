@@ -1,0 +1,35 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %} Cafeteria{% endblock %}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{% static '/css/style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left"><a href="/">Lumière</a></div>
+    <div class="nav-right">
+      {% if user.is_authenticated %}
+        <span class="welcome">{{ user.username }}</span>
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button class="logout-btn" type="submit">Logout</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'base:authView' %}">Sign Up</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <main>
+    {% block content %}
+    <h1>Welcome to Lumière Cafeteria</h1>
+    {% endblock %}
+  </main>
+</body>
+</html>

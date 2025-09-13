@@ -1,0 +1,192 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Your Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: "Inter", Arial, sans-serif;
+  background: #f8f5f0; /* warm white */
+  margin: 0;
+  padding: 40px;
+  color: #111827;
+  display: flex;
+  justify-content: center;
+}
+
+.cart-wrapper {
+  width: 100%;
+  max-width: 1100px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+}
+
+.cart-main { padding: 40px 56px; }
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+.cart-header h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 24px;
+  color: #001f54; /* deep navy */
+}
+.header-right { display: flex; gap: 20px; font-size: 15px; color: #6b7280; }
+.grand-total { font-weight: 600; color: #800020; /* burgundy */ }
+
+.product-row {
+  display: grid;
+  grid-template-columns: 72px 1fr 120px 90px 60px;
+  gap: 18px;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+.product-thumb img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.product-title { font-weight: 600; font-size: 16px; color: #001f54; /* navy */ }
+.product-meta { color: #6b7280; font-size: 13px; margin-top: 4px; }
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.qty-btn,
+.qty-input {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  text-align: center;
+  background: #f9fafb;
+  line-height: 30px;
+  font-weight: bold;
+  color: #111;
+}
+.qty-btn { cursor: pointer; transition: background 0.2s; }
+.qty-btn:hover { background: #f2e7dc; } /* soft beige hover */
+
+.price { text-align: right; font-weight: 600; font-size: 15px; color: #800020; /* burgundy */ }
+
+.remove-link {
+  color: #e53935;
+  font-size: 20px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.remove-link:hover { color: #b71c1c; }
+
+.cart-footer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.continue,
+.checkout-btn {
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+.continue { 
+  color: #001f54; /* navy */
+  background: #e8edf5; /* light navy tint */
+}
+.continue:hover { background: #d6deeb; }
+
+.checkout-btn { 
+  background: #800020; /* burgundy */
+  color: #fff; 
+}
+.checkout-btn:hover { background: #660018; }
+
+.empty-cart {
+  text-align: center;
+  color: #6b7280;
+  margin: 40px 0;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  body { padding: 20px; }
+  .product-row {
+    grid-template-columns: 60px 1fr 80px 70px 40px;
+    gap: 10px;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+<div class="cart-wrapper">
+  <main class="cart-main">
+
+    <div class="cart-header">
+      <h1>Your Cart</h1>
+      <div class="header-right">
+        <span class="items">{{ cart|length }} items</span>
+        <span class="grand-total">£{{ total|floatformat:2 }}</span>
+      </div>
+    </div>
+
+    {% if cart %}
+      {% for key, item in cart.items %}
+      <div class="product-row">
+        <div class="product-thumb">
+      <img src="{{ item.image }}" alt="{{ item.title }}"> 
+       
+        
+      
+        </div>
+
+        <div class="product-info">
+          <div class="product-title">{{ item.title }}</div>
+          <div class="product-meta">{{ item.platform }}</div>
+        </div>
+
+        <div class="qty-control">
+          <a href="{% url 'base:update_quantity' key 'dec' %}" class="qty-btn">−</a>
+          <span class="qty-input">{{ item.quantity }}</span>
+          <a href="{% url 'base:update_quantity' key 'inc' %}" class="qty-btn">+</a>
+        </div>
+
+        <div class="price">£{{ item.price|floatformat:2 }}</div>
+
+        <a href="{% url 'base:remove_from_cart' key %}" class="remove-link">X</a>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-cart">Your cart is empty.</p>
+    {% endif %}
+
+    <div class="cart-footer">
+      <a href="{% url 'base:product_list' %}" class="continue">← Continue Shopping</a>
+      <a href="" class="checkout-btn">Checkout</a>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>
